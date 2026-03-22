@@ -510,12 +510,21 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--bg);color:var(--t
       </div>
 
       <div id="custom-color-section" style="display:none">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px">カラーをカスタマイズ</div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px">🎨 アクセントカラー</div>
         <div class="color-pickers">
           <div class="color-picker-row"><label>メインカラー</label><input type="color" id="cp-a1" value="#9333ea" oninput="applyCustomColors()"></div>
           <div class="color-picker-row"><label>サブカラー1</label><input type="color" id="cp-a2" value="#c084fc" oninput="applyCustomColors()"></div>
           <div class="color-picker-row"><label>サブカラー2</label><input type="color" id="cp-a3" value="#7c3aed" oninput="applyCustomColors()"></div>
           <div class="color-picker-row"><label>アクセント</label><input type="color" id="cp-a5" value="#e879f9" oninput="applyCustomColors()"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);margin:12px 0 8px">🖼️ 背景・テキストカラー</div>
+        <div class="color-pickers">
+          <div class="color-picker-row"><label>背景色</label><input type="color" id="cp-bg" value="#fdf4ff" oninput="applyCustomColors()"></div>
+          <div class="color-picker-row"><label>カード色</label><input type="color" id="cp-surface" value="#ffffff" oninput="applyCustomColors()"></div>
+          <div class="color-picker-row"><label>ボーダー</label><input type="color" id="cp-border" value="#e9c8f7" oninput="applyCustomColors()"></div>
+          <div class="color-picker-row"><label>テキスト</label><input type="color" id="cp-text" value="#2d0a4e" oninput="applyCustomColors()"></div>
+          <div class="color-picker-row"><label>サブテキスト</label><input type="color" id="cp-muted" value="#8b5aad" oninput="applyCustomColors()"></div>
+          <div class="color-picker-row"><label>ホバー背景</label><input type="color" id="cp-hover" value="#f3e8ff" oninput="applyCustomColors()"></div>
         </div>
       </div>
     </div>
@@ -761,13 +770,13 @@ const EMOJIS_COMPOSE = ['🎵','🎤','🎬','🎸','🎹','🥁','🎻','🎺',
 const EMOJIS_AVATAR   = ['✨','🌊','🌸','🎵','🎤','🎬','🌙','⭐','🌈','🌺','🔥','💎','🦋','🌿','🎯','💜','💙','🩵','🐱','🐰','🐼','🦊','🐸','🐧','🦄','🌻','🍀','🎸','🎹','🎨','🏠','🚀','💡','🎊','💫','🌟','🌴','🍭','🎀','🧁'];
 
 const PRESETS = {
-  redpurple:{a1:'#9333ea',a2:'#c084fc',a3:'#7c3aed',a4:'#f0abfc',a5:'#e879f9'},
-  teal:     {a1:'#0ea5b0',a2:'#38bdf8',a3:'#06b6d4',a4:'#5eead4',a5:'#818cf8'},
-  sakura:   {a1:'#e11d74',a2:'#fb7185',a3:'#f43f5e',a4:'#fda4af',a5:'#c084fc'},
-  forest:   {a1:'#16a34a',a2:'#4ade80',a3:'#15803d',a4:'#86efac',a5:'#fb923c'},
-  sunset:   {a1:'#ea580c',a2:'#f97316',a3:'#c2410c',a4:'#fdba74',a5:'#fbbf24'},
-  ocean:    {a1:'#2563eb',a2:'#38bdf8',a3:'#1d4ed8',a4:'#93c5fd',a5:'#34d399'},
-  rose:     {a1:'#be123c',a2:'#fb7185',a3:'#9f1239',a4:'#fda4af',a5:'#f97316'},
+  redpurple:{a1:'#9333ea',a2:'#c084fc',a3:'#7c3aed',a4:'#f0abfc',a5:'#e879f9', bg:'#fdf4ff',surface:'#ffffff',border:'#e9c8f7',text:'#2d0a4e',muted:'#8b5aad',hover:'#f3e8ff'},
+  teal:     {a1:'#0ea5b0',a2:'#38bdf8',a3:'#06b6d4',a4:'#5eead4',a5:'#818cf8', bg:'#f0fafa',surface:'#ffffff',border:'#b2e8e8',text:'#0c2d3a',muted:'#5f9ea8',hover:'#d9f6f6'},
+  sakura:   {a1:'#e11d74',a2:'#fb7185',a3:'#f43f5e',a4:'#fda4af',a5:'#c084fc', bg:'#fff8f9',surface:'#ffffff',border:'#ffd6e7',text:'#3b0a1f',muted:'#b06080',hover:'#fff0f5'},
+  forest:   {a1:'#16a34a',a2:'#4ade80',a3:'#15803d',a4:'#86efac',a5:'#fb923c', bg:'#f0fdf4',surface:'#ffffff',border:'#bbf7d0',text:'#052e16',muted:'#4d8a62',hover:'#dcfce7'},
+  sunset:   {a1:'#ea580c',a2:'#f97316',a3:'#c2410c',a4:'#fdba74',a5:'#fbbf24', bg:'#fff7ed',surface:'#ffffff',border:'#fed7aa',text:'#3a1a08',muted:'#a0613a',hover:'#ffedd5'},
+  ocean:    {a1:'#2563eb',a2:'#38bdf8',a3:'#1d4ed8',a4:'#93c5fd',a5:'#34d399', bg:'#eff6ff',surface:'#ffffff',border:'#bfdbfe',text:'#0a1e4e',muted:'#4a6fa8',hover:'#dbeafe'},
+  rose:     {a1:'#be123c',a2:'#fb7185',a3:'#9f1239',a4:'#fda4af',a5:'#f97316', bg:'#fff1f2',surface:'#ffffff',border:'#fecdd3',text:'#3b0a16',muted:'#a04060',hover:'#ffe4e6'},
 };
 
 // ══════════════════════════════════════════════
@@ -874,11 +883,23 @@ const SHADOW_ALPHA = '44';
 function applyTheme(preset, colors){
   const c = preset==='custom' ? colors : (PRESETS[preset]||PRESETS.redpurple);
   const r = document.documentElement.style;
+  // accent colors
   r.setProperty('--a1',c.a1); r.setProperty('--a2',c.a2);
   r.setProperty('--a3',c.a3); r.setProperty('--a4',c.a4);
   r.setProperty('--a5',c.a5);
   r.setProperty('--shadow',c.a1+SHADOW_ALPHA);
-  currentTheme=preset; if(preset!=='custom') customColors={...c};
+  // light-mode background/surface/text — only when NOT in dark mode
+  if(!darkMode){
+    r.setProperty('--bg',      c.bg      || '#ffffff');
+    r.setProperty('--surface', c.surface || '#ffffff');
+    r.setProperty('--border',  c.border  || '#e5e7eb');
+    r.setProperty('--text',    c.text    || '#111827');
+    r.setProperty('--muted',   c.muted   || '#6b7280');
+    r.setProperty('--hover-bg',c.hover   || '#f3f4f6');
+    r.setProperty('--input-bg',c.bg      || '#ffffff');
+  }
+  currentTheme=preset;
+  if(preset!=='custom') customColors={...c};
 }
 function applyPreset(name, el){
   applyTheme(name, customColors);
@@ -887,10 +908,18 @@ function applyPreset(name, el){
   document.getElementById('custom-color-section').style.display=name==='custom'?'':'none';
   if(name!=='custom'){
     const c=PRESETS[name];
+    // sync accent pickers
     document.getElementById('cp-a1').value=c.a1;
     document.getElementById('cp-a2').value=c.a2;
     document.getElementById('cp-a3').value=c.a3;
     document.getElementById('cp-a5').value=c.a5;
+    // sync bg pickers
+    document.getElementById('cp-bg').value=c.bg||'#ffffff';
+    document.getElementById('cp-surface').value=c.surface||'#ffffff';
+    document.getElementById('cp-border').value=c.border||'#e5e7eb';
+    document.getElementById('cp-text').value=c.text||'#111827';
+    document.getElementById('cp-muted').value=c.muted||'#6b7280';
+    document.getElementById('cp-hover').value=c.hover||'#f3f4f6';
   }
   render(); renderCal(); renderUpcoming(); autoSave();
 }
@@ -901,9 +930,14 @@ function applyCustomColors(){
     a3:document.getElementById('cp-a3').value,
     a4:customColors.a4||'#f0abfc',
     a5:document.getElementById('cp-a5').value,
+    bg:document.getElementById('cp-bg').value,
+    surface:document.getElementById('cp-surface').value,
+    border:document.getElementById('cp-border').value,
+    text:document.getElementById('cp-text').value,
+    muted:document.getElementById('cp-muted').value,
+    hover:document.getElementById('cp-hover').value,
   };
   applyTheme('custom',customColors);
-  // update custom swatch
   document.getElementById('custom-swatch').style.background=`linear-gradient(135deg,${customColors.a1},${customColors.a2})`;
   render(); renderCal(); renderUpcoming(); autoSave();
 }
