@@ -542,6 +542,33 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--bg);color:var(--t
 
     <div class="divider"></div>
 
+    <!-- UI Size -->
+    <div class="settings-section">
+      <div class="settings-section-title">🔧 UI サイズ調整</div>
+
+      <div class="setting-row">
+        <div><div class="setting-label">全体の文字サイズ</div><div class="setting-sub" id="font-size-label">標準</div></div>
+        <input type="range" min="80" max="130" step="5" value="100" id="ui-font-scale"
+          oninput="applyUIScale()" style="width:120px;accent-color:var(--a1)">
+      </div>
+
+      <div class="setting-row" style="margin-top:10px">
+        <div><div class="setting-label">ボタン・カードの大きさ</div><div class="setting-sub" id="ui-size-label">標準</div></div>
+        <input type="range" min="80" max="130" step="5" value="100" id="ui-size-scale"
+          oninput="applyUIScale()" style="width:120px;accent-color:var(--a1)">
+      </div>
+
+      <div class="setting-row" style="margin-top:10px">
+        <div><div class="setting-label">サイドバーの幅</div><div class="setting-sub" id="sidebar-w-label">標準</div></div>
+        <input type="range" min="180" max="320" step="10" value="250" id="ui-sidebar-w"
+          oninput="applyUIScale()" style="width:120px;accent-color:var(--a1)">
+      </div>
+
+      <button class="btn-secondary" style="margin-top:12px;font-size:11px;padding:6px 14px" onclick="resetUIScale()">デフォルトに戻す</button>
+    </div>
+
+    <div class="divider"></div>
+
     <!-- Data -->
     <div class="settings-section">
       <div class="settings-section-title">☁️ クラウド同期</div>
@@ -758,6 +785,7 @@ let pendingCalPost = null, pendingDelId = null, pendingDelProfileId = null;
 let composeImages = [];
 let darkMode = false;
 let darkColors = {bg:'#110820',surface:'#1a0f2e',border:'#3d1f5a',text:'#ece0ff',muted:'#8b6aad',hover:'#2a1445'};
+let uiScale = {fontScale:100, sizeScale:100, sidebarW:250};
 let currentTheme = 'redpurple';
 let customColors = {...PRESETS.redpurple};
 // for profile editing
@@ -784,6 +812,8 @@ function init(){
   document.getElementById('dk-text').value=darkColors.text;
   document.getElementById('dk-muted').value=darkColors.muted;
   document.getElementById('dk-hover').value=darkColors.hover;
+  // apply UI scale
+  syncUIScaleSliders();
   renderSidebar();
   render(); renderCal(); renderUpcoming();
   renderProfilesSettings();
@@ -931,6 +961,119 @@ function resetDarkColors(){
   if(darkMode) applyDarkColorsToDOM();
   autoSave();
   showToast('🔄 ダークモードの色をリセットしました');
+}
+
+// ══════════════════════════════════════════════
+// UI SCALE
+// ══════════════════════════════════════════════
+const SCALE_LABELS = {80:'小さめ',85:'やや小さめ',90:'少し小さめ',95:'やや小さめ',100:'標準',105:'やや大きめ',110:'少し大きめ',115:'やや大きめ',120:'大きめ',125:'かなり大きめ',130:'最大'};
+
+function applyUIScale(){
+  const fs = parseInt(document.getElementById('ui-font-scale').value);
+  const ss = parseInt(document.getElementById('ui-size-scale').value);
+  const sw = parseInt(document.getElementById('ui-sidebar-w').value);
+  uiScale = {fontScale:fs, sizeScale:ss, sidebarW:sw};
+
+  const r = document.documentElement.style;
+
+  // ── Font scale: override every text size via zoom on root ──
+  // Use CSS zoom on html for broadest support; fallback to transform scale
+  const fRatio = fs / 100;
+  const sRatio = ss / 100;
+
+  // Font sizes — set as CSS vars and apply via inline style on html
+  r.setProperty('--fs-xs',  (9  * fRatio) + 'px');
+  r.setProperty('--fs-sm',  (11 * fRatio) + 'px');
+  r.setProperty('--fs-md',  (13 * fRatio) + 'px');
+  r.setProperty('--fs-lg',  (15 * fRatio) + 'px');
+  r.setProperty('--fs-xl',  (17 * fRatio) + 'px');
+
+  // Spacing / size scale — padding, gap, border-radius etc
+  r.setProperty('--pad-sm', (8  * sRatio) + 'px');
+  r.setProperty('--pad-md', (13 * sRatio) + 'px');
+  r.setProperty('--pad-lg', (18 * sRatio) + 'px');
+  r.setProperty('--avatar-size', (38 * sRatio) + 'px');
+  r.setProperty('--btn-pad', `${7*sRatio}px ${16*sRatio}px`);
+  r.setProperty('--card-radius', (18 * sRatio) + 'px');
+  r.setProperty('--action-btn-pad', `${5*sRatio}px ${9*sRatio}px`);
+
+  // Sidebar width (desktop only)
+  r.setProperty('--sidebar-w', sw + 'px');
+  const sb = document.querySelector('.sidebar');
+  if(sb) sb.style.width = sw + 'px';
+
+  // Apply font vars to actual elements via dynamic stylesheet
+  applyScaleStylesheet(fRatio, sRatio);
+
+  // Labels
+  document.getElementById('font-size-label').textContent = SCALE_LABELS[fs] || fs + '%';
+  document.getElementById('ui-size-label').textContent   = SCALE_LABELS[ss] || ss + '%';
+  document.getElementById('sidebar-w-label').textContent = sw + 'px';
+
+  autoSave();
+}
+
+function applyScaleStylesheet(f, s){
+  let el = document.getElementById('scale-stylesheet');
+  if(!el){ el=document.createElement('style'); el.id='scale-stylesheet'; document.head.appendChild(el); }
+  el.textContent = `
+    /* font scale */
+    .post-name { font-size: ${13*f}px !important; }
+    .post-handle { font-size: ${10*f}px !important; }
+    .post-content { font-size: ${13*f}px !important; }
+    .post-tag { font-size: ${10*f}px !important; }
+    .post-schedule { font-size: ${11*f}px !important; }
+    .post-schedule-date { font-size: ${11*f}px !important; }
+    .action-btn { font-size: ${11*f}px !important; }
+    .action-icon { font-size: ${13*f}px !important; }
+    .compose-input { font-size: max(16px, ${13*f}px) !important; }
+    .nav-item { font-size: ${13*f}px !important; }
+    .feed-header h1 { font-size: ${15*f}px !important; }
+    .tab { font-size: ${11*f}px !important; }
+    .widget-title { font-size: ${13*f}px !important; }
+    .upcoming-text { font-size: ${11*f}px !important; }
+    .upcoming-date { font-size: ${9*f}px !important; }
+    .submit-btn { font-size: ${12*f}px !important; }
+    .post-btn { font-size: ${13*f}px !important; }
+    .profile-name { font-size: ${13*f}px !important; }
+    .profile-handle { font-size: ${10*f}px !important; }
+    .settings-section-title { font-size: ${13*f}px !important; }
+    .setting-label { font-size: ${13*f}px !important; }
+    .setting-sub { font-size: ${11*f}px !important; }
+    .mobile-tab { font-size: ${9*f}px !important; }
+    .mobile-tab-icon { font-size: ${20*f}px !important; }
+    .mobile-drawer-item { font-size: ${10*f}px !important; }
+    /* size scale */
+    .post-card { padding: ${13*s}px ${16*s}px !important; gap: ${10*s}px !important; }
+    .post-avatar-wrap { width: ${38*s}px !important; height: ${38*s}px !important; font-size: ${16*s}px !important; }
+    .compose-avatar { width: ${38*s}px !important; height: ${38*s}px !important; font-size: ${16*s}px !important; }
+    .compose-box { padding: ${13*s}px ${16*s}px !important; gap: ${10*s}px !important; }
+    .action-btn { padding: ${5*s}px ${9*s}px !important; border-radius: ${50*s}px !important; }
+    .submit-btn { padding: ${7*s}px ${16*s}px !important; border-radius: ${50*s}px !important; }
+    .post-btn { padding: ${12*s}px ${18*s}px !important; border-radius: ${50*s}px !important; }
+    .nav-item { padding: ${10*s}px ${13*s}px !important; border-radius: ${50*s}px !important; }
+    .widget { padding: ${13*s}px !important; border-radius: ${15*s}px !important; }
+    .profile-avatar { width: ${44*s}px !important; height: ${44*s}px !important; font-size: ${22*s}px !important; }
+    .mobile-tab-icon { font-size: ${20*s}px !important; }
+    .mobile-fab { width: ${52*s}px !important; height: ${52*s}px !important; font-size: ${22*s}px !important; }
+    .mobile-tabbar { height: ${64*s}px !important; }
+    body { padding-bottom: ${64*s}px !important; }
+  `;
+}
+
+function resetUIScale(){
+  uiScale = {fontScale:100, sizeScale:100, sidebarW:250};
+  document.getElementById('ui-font-scale').value = 100;
+  document.getElementById('ui-size-scale').value = 100;
+  document.getElementById('ui-sidebar-w').value  = 250;
+  applyUIScale();
+  showToast('🔄 UIサイズをリセットしました');
+}
+function syncUIScaleSliders(){
+  document.getElementById('ui-font-scale').value = uiScale.fontScale || 100;
+  document.getElementById('ui-size-scale').value = uiScale.sizeScale || 100;
+  document.getElementById('ui-sidebar-w').value  = uiScale.sidebarW  || 250;
+  applyUIScale();
 }
 
 // ══════════════════════════════════════════════
@@ -1498,13 +1641,13 @@ function autoSave(){
   try{
     localStorage.setItem('planner_v4',JSON.stringify({
       nextId,nextProfileId,profiles,activeProfileId,posts,
-      darkMode,darkColors,currentTheme,customColors
+      darkMode,darkColors,currentTheme,customColors,uiScale
     }));
   }catch(e){}
   scheduleCloudSave();
 }
 function saveData(){
-  const blob=new Blob([JSON.stringify({version:4,nextId,nextProfileId,profiles,activeProfileId,posts,darkMode,darkColors,currentTheme,customColors},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({version:4,nextId,nextProfileId,profiles,activeProfileId,posts,darkMode,darkColors,currentTheme,customColors,uiScale},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   const d=new Date(),s=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
   a.download=`planner_${s}.json`;a.click();
@@ -1531,6 +1674,7 @@ function loadFromLocalStorage(){
     if(data.activeProfileId)activeProfileId=data.activeProfileId;
     darkMode=!!data.darkMode;
     if(data.darkColors) darkColors={...DARK_DEFAULTS,...data.darkColors};
+    if(data.uiScale) uiScale={...uiScale,...data.uiScale};
     currentTheme=data.currentTheme||'redpurple';
     customColors=data.customColors||{...PRESETS[currentTheme]||PRESETS.redpurple};
     posts.forEach(p=>{if(!p.images)p.images=[];if(!p.pinned)p.pinned=false;if(p.rtTime===undefined)p.rtTime=null;if(!p.profileId)p.profileId=profiles[0]?.id||'p1';if(!p.cat)p.cat='misc';});
