@@ -2,7 +2,9 @@
 <html lang="ja" data-dark="0">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>活動プランナー</title>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -253,13 +255,127 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--bg);color:var(--t
 
 #img-file-input,#load-file-input,#avatar-file-input{display:none;}
 @media(max-width:900px){.right-panel{display:none;}}
-@media(max-width:620px){
-  .sidebar{width:52px;padding:12px 7px;}
-  .nav-item span:not(.nav-icon){display:none;}
-  .profile-info,.profile-switch-icon{display:none;}
-  .post-btn{font-size:0;padding:12px;}
-  .post-btn::before{content:'✏️';font-size:16px;}
-  .data-btns{display:none;}
+
+/* ══ MOBILE (≤600px) ══ */
+@media(max-width:600px){
+  /* prevent zoom on inputs — font-size must be ≥16px */
+  input, select, textarea { font-size:16px !important; }
+
+  body{ flex-direction:column; padding-bottom:64px; }
+
+  /* hide desktop sidebar */
+  .sidebar{ display:none; }
+
+  /* main fills screen */
+  .main{ max-width:100%; border-right:none; width:100%; }
+  .settings-panel{ max-width:100%; border-right:none; width:100%; }
+
+  /* feed header */
+  .feed-header{ padding:10px 14px; }
+  .feed-header h1{ font-size:14px; }
+
+  /* compose box */
+  .compose-box{ padding:10px 12px; gap:8px; }
+  .compose-avatar{ width:34px; height:34px; font-size:15px; }
+  .compose-input{ font-size:16px !important; min-height:44px; }
+  .compose-meta{ gap:5px; }
+  .meta-input{ font-size:16px !important; padding:6px 10px; }
+  .cat-select{ font-size:16px !important; padding:6px 10px; }
+  .submit-btn{ padding:8px 14px; font-size:13px; }
+
+  /* post cards */
+  .post-card{ padding:11px 12px; gap:8px; }
+  .post-avatar-wrap{ width:34px; height:34px; font-size:15px; }
+  .post-name{ font-size:12px; }
+  .post-handle{ font-size:9px; }
+  .post-tag{ font-size:9px; padding:2px 7px; }
+  .post-content{ font-size:13px; }
+  .action-btn{ padding:5px 7px; font-size:11px; }
+  .action-icon{ font-size:13px; }
+
+  /* settings */
+  .settings-body{ padding:14px 12px; }
+  .form-input{ font-size:16px !important; }
+
+  /* ── BOTTOM TAB BAR ── */
+  .mobile-tabbar{
+    display:flex;
+    position:fixed;
+    bottom:0; left:0; right:0;
+    height:64px;
+    background:var(--surface);
+    border-top:2px solid var(--border);
+    z-index:200;
+    padding-bottom:env(safe-area-inset-bottom);
+    transition:background .3s, border-color .3s;
+  }
+  .mobile-tab{
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:3px; cursor:pointer; border:none; background:none;
+    color:var(--muted); font-family:'Zen Maru Gothic',sans-serif;
+    font-size:9px; font-weight:700; transition:color .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mobile-tab.active{ color:var(--a1); }
+  .mobile-tab-icon{ font-size:20px; line-height:1; }
+
+  /* compose FAB */
+  .mobile-fab{
+    position:fixed;
+    bottom:76px; right:16px;
+    width:52px; height:52px;
+    border-radius:50%;
+    background:var(--a1);
+    color:var(--tag-text);
+    border:none; cursor:pointer;
+    font-size:22px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 16px var(--shadow);
+    z-index:201;
+    transition:transform .1s, box-shadow .15s, background .3s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mobile-fab:active{ transform:scale(.92); }
+
+  /* mobile drawer for more tabs */
+  .mobile-drawer{
+    position:fixed; inset:0;
+    background:var(--modal-overlay);
+    z-index:190;
+    display:none;
+    align-items:flex-end;
+  }
+  .mobile-drawer.open{ display:flex; }
+  .mobile-drawer-content{
+    width:100%;
+    background:var(--surface);
+    border-radius:20px 20px 0 0;
+    padding:16px 16px calc(16px + env(safe-area-inset-bottom));
+    border-top:2px solid var(--border);
+  }
+  .mobile-drawer-title{
+    font-size:12px; font-weight:900; color:var(--muted);
+    margin-bottom:12px; text-align:center;
+  }
+  .mobile-drawer-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  }
+  .mobile-drawer-item{
+    display:flex; flex-direction:column; align-items:center;
+    gap:5px; padding:10px 4px; border-radius:12px;
+    cursor:pointer; border:none; background:var(--hover-bg);
+    font-family:'Zen Maru Gothic',sans-serif;
+    font-size:10px; font-weight:700; color:var(--text);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mobile-drawer-item.active{ background:var(--a1); color:var(--tag-text); }
+  .mobile-drawer-item span:first-child{ font-size:22px; }
+}
+
+/* hide mobile UI on desktop */
+@media(min-width:601px){
+  .mobile-tabbar, .mobile-fab, .mobile-drawer{ display:none !important; }
 }
 </style>
 </head>
@@ -550,6 +666,53 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--bg);color:var(--t
 <div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">&#215;</button>
   <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+</div>
+
+<!-- ══ MOBILE UI ══ -->
+<!-- Compose FAB -->
+<button class="mobile-fab" onclick="mobileFabTap()">✏️</button>
+
+<!-- Bottom tab bar -->
+<nav class="mobile-tabbar">
+  <button class="mobile-tab active" id="mtab-home" onclick="mobileTab('home')">
+    <span class="mobile-tab-icon">🏠</span>ホーム
+  </button>
+  <button class="mobile-tab" id="mtab-release" onclick="mobileTab('release')">
+    <span class="mobile-tab-icon">🎵</span>リリース
+  </button>
+  <button class="mobile-tab" id="mtab-live" onclick="mobileTab('live')">
+    <span class="mobile-tab-icon">🎤</span>ライブ
+  </button>
+  <button class="mobile-tab" id="mtab-settings" onclick="mobileTab('settings')">
+    <span class="mobile-tab-icon">⚙️</span>設定
+  </button>
+  <button class="mobile-tab" id="mtab-more" onclick="openMobileDrawer()">
+    <span class="mobile-tab-icon">☰</span>もっと
+  </button>
+</nav>
+
+<!-- More drawer -->
+<div class="mobile-drawer" id="mobile-drawer" onclick="closeMobileDrawer()">
+  <div class="mobile-drawer-content" onclick="event.stopPropagation()">
+    <div class="mobile-drawer-title">カテゴリ・メニュー</div>
+    <div class="mobile-drawer-grid">
+      <button class="mobile-drawer-item" id="mdrawer-mv" onclick="mobileDrawerTab('mv')">
+        <span>🎬</span>MV制作
+      </button>
+      <button class="mobile-drawer-item" id="mdrawer-sns" onclick="mobileDrawerTab('sns')">
+        <span>💬</span>SNS投稿
+      </button>
+      <button class="mobile-drawer-item" id="mdrawer-misc" onclick="mobileDrawerTab('misc')">
+        <span>🗂️</span>色々
+      </button>
+      <button class="mobile-drawer-item" id="mdrawer-bookmark" onclick="mobileDrawerTab('bookmark')">
+        <span>🔖</span>ブックマーク
+      </button>
+      <button class="mobile-drawer-item" id="mdrawer-pinned" onclick="mobileDrawerTab('pinned')">
+        <span>📌</span>ピン留め
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1384,6 +1547,54 @@ function loadFromLocalStorage(){
       document.getElementById('cp-a5').value=customColors.a5||'#e879f9';
     }
   }catch(e){}
+}
+
+// ══════════════════════════════════════════════
+// MOBILE UI
+// ══════════════════════════════════════════════
+function mobileTab(name){
+  closeMobileDrawer();
+  if(name==='settings'){
+    setView('settings');
+  } else {
+    setTab(name==='home'?'all':name);
+    setView('home');
+  }
+  // update bottom tab active
+  ['home','release','live','settings','more'].forEach(t=>{
+    const el=document.getElementById('mtab-'+t);
+    if(el) el.classList.toggle('active', t===name);
+  });
+  // scroll to top
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function mobileDrawerTab(tab){
+  closeMobileDrawer();
+  setTab(tab); setView('home');
+  // clear tabbar active, highlight "more"
+  ['home','release','live','settings','more'].forEach(t=>{
+    const el=document.getElementById('mtab-'+t);
+    if(el) el.classList.toggle('active', t==='more');
+  });
+  // highlight drawer item
+  document.querySelectorAll('.mobile-drawer-item').forEach(el=>{
+    el.classList.toggle('active', el.id==='mdrawer-'+tab);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function mobileFabTap(){
+  // if in settings, go home first
+  if(currentView==='settings'){ mobileTab('home'); }
+  setTimeout(()=>focusCompose(), 100);
+}
+
+function openMobileDrawer(){
+  document.getElementById('mobile-drawer').classList.add('open');
+}
+function closeMobileDrawer(){
+  document.getElementById('mobile-drawer').classList.remove('open');
 }
 
 init();
